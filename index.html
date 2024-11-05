@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --panel-bg: #f4f4f4;
+    --border-color: #ccc;
+    --cube-container-bg: #eee;
+    --button-bg: #4CAF50;
+    --button-hover: #45a049;
+    --button-text: #ffffff;
+  }
+
+  [data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --panel-bg: #2d2d2d;
+    --border-color: #444;
+    --cube-container-bg: #333;
+    --button-bg: #2d5e30;
+    --button-hover: #1e4021;
+    --button-text: #ffffff;
+  }
+
+  body {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  .container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .panel {
+    width: 250px;
+    padding: 20px;
+    background-color: var(--panel-bg);
+    border-right: 1px solid var(--border-color);
+  }
+  .cube-container {
+    width: 650px;
+    height: 650px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--cube-container-bg);
+    border: 1px solid var(--border-color);
+  }
+  .cube {
+    width: 200px;
+    height: 200px;
+    background-color: #3498db;
+    opacity: 0.7;
+    border: 1px solid #2980b9;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+    transform: rotate(0.3s);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative;
+  }
+  .cube::after {
+    content: attr(data-size) " | Borde: " attr(data-border) "px | Radio: " attr(data-radius) "px | Rotación: " attr(data-rotation) "°";
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-color);
+    white-space: nowrap;
+  }
+  .code-container {
+    width: 250px;
+    padding: 20px;
+    background-color: var(--panel-bg);
+    border-left: 1px solid var(--border-color);
+  }
+  .code {
+    font-family: monospace;
+    white-space: pre;
+    overflow: auto;
+    height: 250px;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  .input-value {
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  input[type="range"] {
+    width: 100%;
+    margin: 10px 0;
+  }
+  input[type="number"] {
+    width: 60px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+  }
+  input[type="text"] {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  .theme-switch {
+    margin: 10px;
+    padding: 8px 15px;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--text-color);
+  }
+  .action-button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    transition: background-color 0.3s;
+  }
+  .action-button:hover {
+    background-color: var(--button-hover);
+  }
+</style>
+<title>Programa de Creación de Cubos</title>
+</head>
+<body>
+<div class="container">
+  <div class="panel">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h2>Panel de Cambios</h2>
+      <button class="theme-switch" onclick="toggleTheme()">Cambiar Tema</button>
+    </div>
+    <label for="cubeWidth">Anchura del Cubo (px):</label>
+    <input type="number" id="cubeWidth" value="200" min="50" max="400">
+    <input type="range" id="cubeWidthRange" value="200" min="50" max="400">
+    <br>
+    <label for="cubeHeight">Altura del Cubo (px):</label>
+    <input type="number" id="cubeHeight" value="200" min="50" max="400">
+    <input type="range" id="cubeHeightRange" value="200" min="50" max="400">
+    <br>
+    <label for="cubeColor">Color del Cubo:</label>
+    <input type="color" id="cubeColor" value="#3498db">
+    <br>
+    <label for="cubeOpacity">Opacidad del Cubo (0-1):</label>
+    <input type="number" id="cubeOpacity" value="0.7" step="0.1" min="0" max="1">
+    <input type="range" id="cubeOpacityRange" value="0.7" step="0.1" min="0" max="1">
+    <br>
+    <label for="cubeBorder">Ancho del Borde (px):</label>
+    <input type="number" id="cubeBorder" value="1" min="0" max="10">
+    <input type="range" id="cubeBorderRange" value="1" min="0" max="10">
+    <br>
+    <label for="cubeBorderRadius">Radio del Borde (px):</label>
+    <input type="number" id="cubeBorderRadius" value="10" min="0" max="50">
+    <input type="range" id="cubeBorderRadiusRange" value="10" min="0" max="50">
+    <br>
+    <label for="cubeBoxShadow">Sombra del Cubo (px):</label>
+    <input type="text" id="cubeBoxShadow" value="5px 5px 15px rgba(0, 0, 0, 0.5)">
+    <br>
+    <label for="cubeRotation">Rotación del Cubo (grados):</label>
+    <input type="number" id="cubeRotation" value="0" min="0" max="360">
+    <input type="range" id="cubeRotationRange" value="0" min="0" max="360">
+    <br>
+    <button id="generateCodeBtn" class="action-button">Generar Código</button>
+  </div>
+  <div class="cube-container">
+    <div class="cube" data-size="200x200" data-border="1" data-radius="10" data-rotation="0"></div>
+  </div>
+  <div class="code-container">
+    <h2>Código Generado</h2>
+    <pre class="code" id="generatedCode"></pre>
+    <button id="copyCodeBtn" class="action-button">Copiar Código</button>
+  </div>
+</div>
+<script>
+  const cube = document.querySelector('.cube');
+  const generatedCode = document.getElementById('generatedCode');
+
+  // Función para cambiar tema
+  function toggleTheme() {
+    document.documentElement.setAttribute('data-theme', 
+      document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'
+    );
+  }
+
+  // Función para actualizar los atributos del cubo
+  function updateCubeAttributes() {
+    const width = cube.style.width || '200px';
+    const height = cube.style.height || '200px';
+    const border = cube.style.borderWidth || '1px';
+    const radius = cube.style.borderRadius || '10px';
+    const rotation = cube.style.transform ? cube.style.transform.match(/\d+/) || ['0'] : ['0'];
+    
+    cube.setAttribute('data-size', `${width.replace('px','')}x${height.replace('px','')}`);
+    cube.setAttribute('data-border', border.replace('px',''));
+    cube.setAttribute('data-radius', radius.replace('px',''));
+    cube.setAttribute('data-rotation', rotation[0]);
+  }
+
+  // Función para copiar código
+  document.getElementById('copyCodeBtn').addEventListener('click', function() {
+    const code = generatedCode.textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      this.textContent = '¡Código Copiado!';
+      setTimeout(() => {
+        this.textContent = 'Copiar Código';
+      }, 2000);
+    });
+  });
+
+  // Función para sincronizar inputs number y range
+  function syncInputs(numberInput, rangeInput) {
+    const value = numberInput.value;
+    rangeInput.value = value;
+    return value;
+  }
+
+  // Anchura
+  document.getElementById('cubeWidth').addEventListener('input', function() {
+    const width = syncInputs(this, document.getElementById('cubeWidthRange'));
+    cube.style.width = `${width}px`;
+    updateCubeAttributes();
+  });
+  document.getElementById('cubeWidthRange').addEventListener('input', function() {
+    document.getElementById('cubeWidth').value = this.value;
+    cube.style.width = `${this.value}px`;
+    updateCubeAttributes();
+  });
+
+  // Altura
+  document.getElementById('cubeHeight').addEventListener('input', function() {
+    const height = syncInputs(this, document.getElementById('cubeHeightRange'));
+    cube.style.height = `${height}px`;
+    updateCubeAttributes();
+  });
+  document.getElementById('cubeHeightRange').addEventListener('input', function() {
+    document.getElementById('cubeHeight').value = this.value;
+    cube.style.height = `${this.value}px`;
+    updateCubeAttributes();
+  });
+
+  // Color
+  document.getElementById('cubeColor').addEventListener('input', function() {
+    cube.style.backgroundColor = this.value;
+  });
+
+  // Opacidad
+  document.getElementById('cubeOpacity').addEventListener('input', function() {
+    const opacity = syncInputs(this, document.getElementById('cubeOpacityRange'));
+    cube.style.opacity = opacity;
+  });
+  document.getElementById('cubeOpacityRange').addEventListener('input', function() {
+    document.getElementById('cubeOpacity').value = this.value;
+    cube.style.opacity = this.value;
+  });
+
+  // Borde
+  document.getElementById('cubeBorder').addEventListener('input', function() {
+    const border = syncInputs(this, document.getElementById('cubeBorderRange'));
+    cube.style.borderWidth = `${border}px`;
+    updateCubeAttributes();
+  });
+  document.getElementById('cubeBorderRange').addEventListener('input', function() {
+    document.getElementById('cubeBorder').value = this.value;
+    cube.style.borderWidth = `${this.value}px`;
+    updateCubeAttributes();
+  });
+
+  // Radio del borde
+  document.getElementById('cubeBorderRadius').addEventListener('input', function() {
+    const radius = syncInputs(this, document.getElementById('cubeBorderRadiusRange'));
+    cube.style.borderRadius = `${radius}px`;
+    updateCubeAttributes();
+  });
+  document.getElementById('cubeBorderRadiusRange').addEventListener('input', function() {
+    document.getElementById('cubeBorderRadius').value = this.value;
+    cube.style.borderRadius = `${this.value}px`;
+    updateCubeAttributes();
+  });
+
+  // Sombra
+  document.getElementById('cubeBoxShadow').addEventListener('input', function() {
+    cube.style.boxShadow = this.value;
+  });
+
+  // Rotación
+  document.getElementById('cubeRotation').addEventListener('input', function() {
+    const rotation = syncInputs(this, document.getElementById('cubeRotationRange'));
+    cube.style.transform = `rotate(${rotation}deg)`;
+    updateCubeAttributes();
+  });
+  document.getElementById('cubeRotationRange').addEventListener('input', function() {
+    document.getElementById('cubeRotation').value = this.value;
+    cube.style.transform = `rotate(${this.value}deg)`;
+    updateCubeAttributes();
+  });
+
+  // Generar código
+  document.getElementById('generateCodeBtn').addEventListener('click', function() {
+    const code = `
+.cube {
+  width: ${cube.style.width};
+  height: ${cube.style.height};
+  background-color: ${cube.style.backgroundColor};
+  opacity: ${cube.style.opacity};
+  border-width: ${cube.style.borderWidth};
+  border-radius: ${cube.style.borderRadius};
+  box-shadow: ${cube.style.boxShadow};
+  transform: ${cube.style.transform};
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}`;
+    generatedCode.textContent = code;
+  });
+
+  // Inicializar los atributos del cubo
+  updateCubeAttributes();
+</script>
+</body>
+</html>
